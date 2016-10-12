@@ -21,18 +21,23 @@ Reconstruction d'étiquettes de bouteilles de vin
 # Une approache
 
 Dans le monde 2D l'étiquette est un rectangle :
-<img src="./images/label.png" />
+<img src="./images/doc/label.png" />
 
 La répresentation de la scène dans le monde 3D est montrée à continuation :
-<img src="./images/image.png" />
+<img src="./images/doc/image.png" />
 
 On peut definir une système de coordonées en 3D pour formuler un modele de 
 distorsion qui soit accorde a notre problème :
-<img src="./images/coordinates.png" />
+<img src="./images/doc/coordinates.png" />
 
 La relation entre les pixeles de la camera et l'espace 3D est modelisée par la 
 matrice de projection (pour le cas d'un model de camera "pinhole" )
 
-$$ \mathsf{P} = \mathsf{K}  \mathsf{R} \begin{bmatrix} \mathsf{I} & -\mathbf{t} \end{bmatrix} $$ 
+<img src="./images/doc/pMatrix.png" />
+
+
+# Liens importants :
+[La matrice de projection] (http://ksimek.github.io/2012/08/13/introduction/)
+
 
 
