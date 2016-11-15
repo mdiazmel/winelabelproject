@@ -88,8 +88,8 @@
    v1 = cross(cross(a,b),cross(c,d));
    v2 = cross(cross(a,d),cross(b,c));
    
-   v1 = v1/v1(3);
-   v2 = v2/v2(3);
+   v1 = v1/v1(3)
+   v2 = v2/v2(3)
    
   
    
@@ -99,7 +99,23 @@
    
    %%
    
+   R1 = [cross(v1,v2) v1 v2]
    
+   R2 = [cross(v1,v2) -v1 v2];
+   R3 = [cross(v1,v2) v1 -v2];
+   R4 = [cross(v1,v2) -v1 -v2];
+   R5 = [-cross(v1,v2) v1 v2];
+   R6 = [-cross(v1,v2) -v1 v2];
+   R7 = [-cross(v1,v2) v1 -v2];
+   R8 = [-cross(v1,v2) -v1 -v2];
    
-   
- 
+  %%
+det(R1)
+det(R2)
+det(R3)
+det(R4)
+det(R5)
+det(R6)
+det(R7)
+det(R8)
+%%
