@@ -18,7 +18,7 @@ Reconstruction d'étiquettes de bouteilles de vin
 
 * Vision par ordinateur, geométrie projective, traitement d'images
 
-# Une approache
+# Une première approache
 
 Dans le monde 2D l'étiquette est un rectangle :
 <img src="./images/doc/label.png" />
@@ -31,7 +31,7 @@ distorsion qui soit accorde a notre problème :
 <img src="./images/doc/coordinates.png" />
 
 La relation entre les pixeles de la camera et l'espace 3D est modelisée par la 
-matrice de projection (pour le cas d'un model de camera "pinhole" )
+matrice de projection (pour le cas d'un modèle sténotopé ou "pinhole" )
 
 <img src="./images/doc/pMatrix.png" />
 
