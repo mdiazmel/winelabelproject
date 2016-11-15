@@ -1,11 +1,12 @@
 %%
     % Load an image into Matlab
+      clear all;
       pic = imread('westerncelars.JPG');
       imshow(pic);
         
  %%   user input points  
       
-      info = imfinfo('westerncelars.JPG');
+      info = imfinfo('westerncelars.JPG')
       info.DigitalCamera;
       f=info.DigitalCamera.FocalLengthIn35mmFilm;
     % Define the number of times you want to repeat the process
