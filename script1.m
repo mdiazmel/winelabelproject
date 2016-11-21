@@ -9,7 +9,7 @@ close all   % Fermer toutes les fenetres ouvertes
       % Metadonn?es
       info = imfinfo('westerncelars.JPG')
       info.DigitalCamera;
-      f=info.DigitalCamera.FocalLengthIn35mmFilm;
+      f=info.DigitalCamera.FocalLength;
         
  %%   user input points  
       
