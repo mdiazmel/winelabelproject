@@ -9,7 +9,16 @@ close all   % Fermer toutes les fenetres ouvertes
       % Metadonn?es
       info = imfinfo('westerncelars.JPG')
       info.DigitalCamera;
-      f=info.DigitalCamera.FocalLength;
+      f_in_mm =info.DigitalCamera.FocalLength;
+      
+      % Taille de l'image
+      v0 = info.Width;
+      u0 = info.Height;
+      % La distance focal f_in_mm est donn?e en milimetres. Il faut la
+      % transformer pour une distance focal express?e en pixels :
+      
+      % focal length in pixels = (image width in pixels) * (focal length in mm) / (CCD width in mm)
+      f = u0 * f_in_mm / 4.8;  % Size of the CCD d'un iphone 6, 4.80 x 3.60 mm (d'apr?s Internet...)
         
  %%   user input points  
       
@@ -71,24 +80,21 @@ close all   % Fermer toutes les fenetres ouvertes
    DO=([xD-xB;yB-yD]);
    
    
-   %%
-   xO=size(pic,1)/2;
-   yO=size(pic,2)/2;
-   
+   %% Pas 1. Calcul des points de l'image callibr?s selon la matrice K
    s=1;     % car les ( skew ) pixels sont carres
     
-   K= [f,s,xO;
-       0,f,yO;
+   K= [f,s,u0;
+       0,f,v0;
        0,0,1]
-   %%
-   positions2(:,3)=1;
+   
+   positions2(:,3)=1;     % Ajout d'un 1 pour creer de coordon?es homog?nes
    q = K^-1 * positions2';
    a = q(:,1);
    b = q(:,2);
    c = q(:,3);
    d = q(:,4);
    
-   %%
+   %% 
    v1 = cross(cross(a,b),cross(c,d));
    v2 = cross(cross(a,d),cross(b,c));
    
