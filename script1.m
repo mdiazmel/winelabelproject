@@ -1,14 +1,18 @@
-%%
-    % Load an image into Matlab
+%% R?cuperation d'etiquettes de bouteilles de vin
+clear all   % Nettoyer les variables du workspace (memoire)
+close all   % Fermer toutes les fenetres ouvertes
+%% Charger l'image en Matlab. Charger aussi information des metadonn?es.
       clear all;
       pic = imread('westerncelars.JPG');
       imshow(pic);
-        
- %%   user input points  
       
+      % Metadonn?es
       info = imfinfo('westerncelars.JPG')
       info.DigitalCamera;
       f=info.DigitalCamera.FocalLengthIn35mmFilm;
+        
+ %%   user input points  
+      
     % Define the number of times you want to repeat the process
     % e.g. if there are multiple lines / shapes that you need to fit to
       num_input = 1; 
@@ -61,7 +65,7 @@
    cP=positions2(3,:);
    dP=positions2(4,:);
    
-   AO=([xB-xA;yB-yA]);   %changement de coordonnées 
+   AO=([xB-xA;yB-yA]);   %changement de coordonn?es 
    BO=([xB-xB;yB-yB]);   %origine B
    CO=([xC-xB;yB-yC]);
    DO=([xD-xB;yB-yD]);
