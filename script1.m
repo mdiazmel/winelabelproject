@@ -94,38 +94,41 @@ close all   % Fermer toutes les fenetres ouvertes
    c = q(:,3);
    d = q(:,4);
    
-   %% 
+   %%  Pas 2. Calcule des points de fuite
+   % Methode 1
    v1 = cross(cross(a,b),cross(c,d));
    v2 = cross(cross(a,d),cross(b,c));
-   
-   v1 = v1/v1(3)
-   v2 = v2/v2(3)
-   
   
    
-   %%
+   %% Clacul de points de fuite 
+   % Methode 2
    intersection_1 = lineIntersection(a(1:2),b(1:2),c(1:2),d(1:2));  %E
    intersection_2 = lineIntersection2(a(1:2),b(1:2),c(1:2),d(1:2));  %E2
    
-   %%
+   %% Pas 3. Normalize au vector unit? les vectors v1 et v2
+   v1 = v1/norm(v1)
+   v2 = v2/norm(v2)
    
-   R1 = [cross(v1,v2) v1 v2]
+   %% Pas 4. Calcule des solutions possibles pour R.
+   % Toutes les possibilit?s sont test?s
    
-   R2 = [cross(v1,v2) -v1 v2];
+   R1 = [cross(v1,v2) v1 v2]   
+   R2 = [cross(v1,v2) -v1 v2]; 
    R3 = [cross(v1,v2) v1 -v2];
-   R4 = [cross(v1,v2) -v1 -v2];
+   R4 = [cross(v1,v2) -v1 -v2]; 
    R5 = [-cross(v1,v2) v1 v2];
-   R6 = [-cross(v1,v2) -v1 v2];
-   R7 = [-cross(v1,v2) v1 -v2];
+   R6 = [-cross(v1,v2) -v1 v2]; 
+   R7 = [-cross(v1,v2) v1 -v2]; 
    R8 = [-cross(v1,v2) -v1 -v2];
    
-  %%
-det(R1)
-det(R2)
-det(R3)
-det(R4)
-det(R5)
-det(R6)
-det(R7)
-det(R8)
+  % Nous gardons seulement les matrices de rotation R* ou le determinant
+  % est = +1
+    det(R1)  
+    det(R2)
+    det(R3)
+    det(R4)
+    det(R5)
+    det(R6)
+    det(R7)
+    det(R8)
 %%
