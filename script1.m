@@ -17,8 +17,11 @@ close all   % Fermer toutes les fenetres ouvertes
       % La distance focal f_in_mm est donn?e en milimetres. Il faut la
       % transformer pour une distance focal express?e en pixels :
       
+      % Extraction de la taille du capteur en mm
+      taille_en_mm = info.DigitalCamera.FocalLength * 35 / info.DigitalCamera.FocalLengthIn35mmFilm;
+      
       % focal length in pixels = (image width in pixels) * (focal length in mm) / (CCD width in mm)
-      f = u0 * f_in_mm / 4.8;  % Size of the CCD d'un iphone 6, 4.80 x 3.60 mm (d'apr?s Internet...)
+      f = u0 * f_in_mm / taille_en_mm;  % Size of the CCD d'un iphone 6, 4.80 x 3.60 mm (d'apr?s Internet...)
         
  %%   user input points  
       
@@ -112,14 +115,14 @@ close all   % Fermer toutes les fenetres ouvertes
    %% Pas 4. Calcule des solutions possibles pour R.
    % Toutes les possibilit?s sont test?s
    
-   R1 = [cross(v1,v2) v1 v2]   
-   R2 = [cross(v1,v2) -v1 v2]; 
-   R3 = [cross(v1,v2) v1 -v2];
-   R4 = [cross(v1,v2) -v1 -v2]; 
-   R5 = [-cross(v1,v2) v1 v2];
-   R6 = [-cross(v1,v2) -v1 v2]; 
-   R7 = [-cross(v1,v2) v1 -v2]; 
-   R8 = [-cross(v1,v2) -v1 -v2];
+   R1 = [cross(v1,v2) v2 v1]   
+   R2 = [cross(v1,v2) -v2 v1];  %%
+   R3 = [cross(v1,v2) v2 -v1];  %%
+   R4 = [cross(v1,v2) -v2 -v1]; 
+   R5 = [-cross(v1,v2) v2 v1];  %%
+   R6 = [-cross(v1,v2) -v2 v1]; 
+   R7 = [-cross(v1,v2) v2 -v1]; 
+   R8 = [-cross(v1,v2) -v2 -v1]; %%
    
   % Nous gardons seulement les matrices de rotation R* ou le determinant
   % est = +1
@@ -131,4 +134,6 @@ close all   % Fermer toutes les fenetres ouvertes
     det(R6)
     det(R7)
     det(R8)
+    
+   % On garde R2, R3, R5 et R8
 %%
