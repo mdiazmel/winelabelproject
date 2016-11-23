@@ -136,4 +136,6 @@ close all   % Fermer toutes les fenetres ouvertes
     det(R8)
     
    % On garde R2, R3, R5 et R8
-%%
+%% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
+
+x = calculPose(a, b, c, d, R2);
