@@ -10,7 +10,7 @@ Reconstruction d'étiquettes de bouteilles de vin
   ** But : reconstruir la forme de l'étiquette et la position relative de la
      camera, à partir d'une seule image.
 
-<img src="./images/img2.jpg" />
+<img src="./images/chateaulebreuil.jpg" />
 
 * Language de programation
 
@@ -38,6 +38,7 @@ matrice de projection (pour le cas d'un modèle sténotopé ou "pinhole" )
 
 # Liens importants :
 [La matrice de projection] (http://ksimek.github.io/2012/08/13/introduction/)
+[Coordonées homogènes] (http://deltaorange.com/2012/03/08/the-truth-behind-homogenous-coordinates/)
 
 
 
