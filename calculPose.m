@@ -5,9 +5,18 @@ bp = R' * b;
 cp = R' * c;
 dp = R' * d;
 
-matAux = [ -1  0  0  0  0;
-           0  -1  0 -1  0;
-           0   0 -1  0  1];
+matAux1 = [ -1   0  0  0  0;
+             0  -1  0 -1  0;
+             0   0 -1  0  1];
+matAux2 = [ -1   0  0  0  0;
+             0  -1  0 -1  0;
+             0   0 -1  0 -1];
+matAux3 = [ -1   0  0  0  0;
+             0  -1  0  1  0;
+             0   0 -1  0 -1];
+matAux4 = [ -1   0  0  0  0;
+             0  -1  0  1  0;
+             0   0 -1  0  1];
 
 ap_m = [ 0      -ap(3)  ap(2);
         ap(3)   0       -ap(1);
@@ -25,10 +34,10 @@ dp_m = [ 0      -dp(3)  dp(2);
         dp(3)   0       -dp(1);
        -dp(2)   dp(1)   0];
 
-A = [ ap_m * matAux;
-      bp_m * matAux;
-      cp_m * matAux;
-      dp_m * matAux];
+A = [ ap_m * matAux1;
+      bp_m * matAux2;
+      cp_m * matAux3;
+      dp_m * matAux4];
 
 % Pour resoudre Ax=0 on utilise svd
 

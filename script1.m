@@ -139,3 +139,10 @@ close all   % Fermer toutes les fenetres ouvertes
 %% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
 
 x = calculPose(a, b, c, d, R2);
+t = x(1:3);
+m = x(4);
+
+R = R2;
+P=K*R*[eye(3) -t];
+
+a=P*[0; -m; 1; 1]; a=a/a(3,1)
