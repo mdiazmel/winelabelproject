@@ -136,15 +136,26 @@ close all   % Fermer toutes les fenetres ouvertes
    % On garde R2, R3, R5 et R8
 %% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
 
-x = calculPose(a, b, c, d, R2)
+x = calculPose(a, b, c, d, R8)
 t = x(1:3);
 m = x(4);
 
-R = R2;
+R = R8;
 P=K*R*[eye(3) -t];
 
-a=P*[0; -m; 1; 1]; 
-a=a/a(3,1);
+an=P*[0; -m; 1; 1]; 
+an=an/an(3,1)
+
+bn=P*[0; -m; -1; 1]; 
+bn=bn/bn(3,1)
+
+cn=P*[0; m; -1; 1]; 
+cn=cn/cn(3,1)
+
+dn=P*[0; m; 1; 1]; 
+dn=dn/dn(3,1)
+
+
 %%
 
 imshow(pic);
@@ -158,13 +169,15 @@ X1=q(:,1);
 Y1=q(:,2);
 plot(X,Y,'*','LineWidth',3,'MarkerSize',20);
 hold on;
-plot(aP(:,1),aP(:,2),'s','Linewidth',3,'MarkerSize',20);
+plot(an(1),an(2),'s','Linewidth',3,'MarkerSize',20);
 hold on
-plot(bP(:,1),bP(:,2),'s','Linewidth',3,'MarkerSize',20);
+plot(bn(1),bn(2),'s','Linewidth',3,'MarkerSize',20);
 hold on
-plot(cP(:,1),cP(:,2),'s','Linewidth',3,'MarkerSize',20);
+plot(cn(1),cn(2),'s','Linewidth',3,'MarkerSize',20);
 hold on
-plot(dP(:,1),dP(:,2),'s','Linewidth',3,'MarkerSize',20);
+plot(dn(1),dn(2),'s','Linewidth',3,'MarkerSize',20);
 hold on
+plot (a,m,'s')
+
 
 %%
