@@ -1,6 +1,8 @@
 %% R?cuperation d'etiquettes de bouteilles de vin
 clear all   % Nettoyer les variables du workspace (memoire)
 close all   % Fermer toutes les fenetres ouvertes
+
+
 %% Charger l'image en Matlab. Charger aussi information des metadonn?es.
       clear all;
       pic = imread('westerncelars.JPG');
@@ -14,7 +16,7 @@ close all   % Fermer toutes les fenetres ouvertes
       % Taille de l'image
       v0 = info.Width;
       u0 = info.Height;
-      % La distance focal f_in_mm est donn?e en milimetres. Il faut la
+      % La distance focal f_in_mm est donnee en milimetres. Il faut la
       % transformer pour une distance focal express?e en pixels :
       
       % Extraction de la taille du capteur en mm
@@ -77,20 +79,16 @@ close all   % Fermer toutes les fenetres ouvertes
    cP=positions2(3,:);
    dP=positions2(4,:);
    
-   AO=([xB-xA;yB-yA]);   %changement de coordonn?es 
-   BO=([xB-xB;yB-yB]);   %origine B
-   CO=([xC-xB;yB-yC]);
-   DO=([xD-xB;yB-yD]);
    
    
-   %% Pas 1. Calcul des points de l'image callibr?s selon la matrice K
+   %% Pas 1. Calcul des points de l'image callibres selon la matrice K
    s=1;     % car les ( skew ) pixels sont carres
     
    K= [f,s,u0;
        0,f,v0;
        0,0,1]
    
-   positions2(:,3)=1;     % Ajout d'un 1 pour creer de coordon?es homog?nes
+   positions2(:,3)=1;     % Ajout d'un 1 pour creer de coordonees homogenes
    q = K^-1 * positions2';
    a = q(:,1);
    b = q(:,2);
@@ -138,11 +136,35 @@ close all   % Fermer toutes les fenetres ouvertes
    % On garde R2, R3, R5 et R8
 %% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
 
-x = calculPose(a, b, c, d, R2);
+x = calculPose(a, b, c, d, R2)
 t = x(1:3);
 m = x(4);
 
 R = R2;
 P=K*R*[eye(3) -t];
 
-a=P*[0; -m; 1; 1]; a=a/a(3,1)
+a=P*[0; -m; 1; 1]; 
+a=a/a(3,1);
+%%
+
+imshow(pic);
+hold on;
+   
+X=positions2(:,1);
+Y=positions2(:,2);
+X(5,:)=X(1,:);
+Y(5,:)= Y(1,:);
+X1=q(:,1);
+Y1=q(:,2);
+plot(X,Y,'*','LineWidth',3,'MarkerSize',20);
+hold on;
+plot(aP(:,1),aP(:,2),'s','Linewidth',3,'MarkerSize',20);
+hold on
+plot(bP(:,1),bP(:,2),'s','Linewidth',3,'MarkerSize',20);
+hold on
+plot(cP(:,1),cP(:,2),'s','Linewidth',3,'MarkerSize',20);
+hold on
+plot(dP(:,1),dP(:,2),'s','Linewidth',3,'MarkerSize',20);
+hold on
+
+%%

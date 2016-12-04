@@ -1,9 +1,7 @@
 
 imshow(pic);
 hold on;
-
-
-    
+   
 X=positions2(:,1);
 Y=positions2(:,2);
 X(5,:)=X(1,:);

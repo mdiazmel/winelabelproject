@@ -1,4 +1,4 @@
-function x = calculPose(a, b, c, d, R)
+function [x] = calculPose(a, b, c, d, R)
 
 ap = R' * a;
 bp = R' * b;
@@ -39,7 +39,7 @@ A = [ ap_m * matAux1;
       cp_m * matAux3;
       dp_m * matAux4];
 
-% Pour resoudre Ax=0 on utilise svd
+% Pour resoudre Ax = 0 on utilise svd
 
 [U, S, V] = svd(A);
 
