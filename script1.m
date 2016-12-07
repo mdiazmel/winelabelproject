@@ -140,7 +140,7 @@ x = calculPose(a, b, c, d, R8)
 t = x(1:3);
 m = x(4);
 
-R = R8;
+R = R3;
 P=K*R*[eye(3) -t];
 
 an=P*[0; -m; 1; 1]; 
@@ -154,7 +154,6 @@ cn=cn/cn(3,1)
 
 dn=P*[0; m; 1; 1]; 
 dn=dn/dn(3,1)
-
 
 %%
 
@@ -180,4 +179,15 @@ hold on
 plot (a,m,'s')
 
 
-%%
+%%  calcul de l'erreur de modédilsation
+
+Err_modA = sqrt(abs((xA-an(1))^2 - ((yA-an(2))^2)))
+Err_modB = sqrt(abs((xB-an(1))^2 - ((yB-an(2))^2)))
+Err_modC = sqrt(abs((xC-an(1))^2 - ((yC-an(2))^2)))
+Err_modD = sqrt(abs((xD-an(1))^2 - ((yD-an(2))^2)))
+
+Err_moyenne = (Err_modA+Err_modB+Err_modC+Err_modD)/4
+%a = (x, y)
+%a_proj1 = (w, z)
+
+%la différence entre a et a_proj1 est : sqrt((x-w)^2 - (y-x)^2)
