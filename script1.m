@@ -135,9 +135,9 @@ close all   % Fermer toutes les fenetres ouvertes
     
    % On garde R2, R3, R5 et R8
 %% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
-%R8 et R5 2carté car m négatif 
+%R8 et R5 2cart? car m n?gatif 
 
-R = R8;
+R = R3;
 
 x = calculPose(a, b, c, d, R)
 
@@ -195,52 +195,40 @@ Err_moyenne = (Err_modA+Err_modB+Err_modC+Err_modD)/4
 
 %la diff?rence entre a et a_proj1 est : sqrt((x-w)^2 - (y-x)^2)
 
-%% definition des matrices c c' et c''
+%% Definition des matrices c c' et c''
 
- 
-cprimeplus = R*[(1-t(3))  0  0;
-       0  (1-t(3)) 0;
-       t(1) t(2)   1] * ...
-      [1  0  0;
-       0  1  0;
-       0  0  -m] * ...
-      [(1-t(3))  0    t(1);
-        0  (1-t(3)) t(2);
-        0      0       1] * R'
- cprimemoins = R*[-1-t(3)  0  0;
-       0  -1-t(3) 0;
-       t(1) t(2)   1] * ...
-      [1  0  0;
-       0  1  0;
-       0  0  -m] * ...
-      [-1-t(3)  0    t(1);
-        0  -1-t(3) t(2);
-        0      0       1] * R'
+% C prime plus 
+cpPlus =    R*[(1-t(3))  0  0; 0  (1-t(3)) 0; t(1) t(2) 1] * ...
+            [1  0  0;
+             0  1  0;
+             0  0  -(m^2)] * ...
+            [(1-t(3))  0    t(1); 0  (1-t(3)) t(2); 0  0  1] * R';
+
+% C prime moins
+cpMoins =   R*[-1-t(3)  0  0;  0  -1-t(3) 0;  t(1) t(2)   1] * ...
+            [1  0  0;
+             0  1  0;
+             0  0  -(m^2)] * ...
+            [-1-t(3)  0    t(1); 0  -1-t(3) t(2); 0  0  1] * R';
     
     
- csecondeplus = R*[(1-t(3))  0  0;
-                 0  (1-t(3)) 0;
-                 t(2) t(1)   1] * ...
-                 [0  0  -1;
-                  0  0  0;
-                  -1  0  0] * ...
-                 [1-t(3)  0    t(1);
-                    0  1-t(3) t(2);
-                    0      0       1] * R'
+% C seconde plus
+cppPlus =   R*[(1-t(3))  0  0; 0  (1-t(3)) 0; t(1) t(2)   1] * ...
+            [0  0  -1;
+             0  0  0;
+            -1  0  0] * ...
+            [1-t(3)  0    t(1); 0  1-t(3) t(2); 0  0  1] * R';
                                                
-  csecondemoins = R*[-1-t(3)  0  0;
-                 0  -1-t(3) 0;
-                 t(2) t(1)   1] * ...
-                 [0  0  -1;
-                  0  0  0;
-                  -1  0  0] * ...
-                 [-1-t(3)  0    t(1);
-                    0  -1-t(3) t(2);
-                   0      0       1] * R' 
+% C seconde moins
+cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
+            [0  0  -1;
+             0  0  0;
+            -1  0  0] * ...
+            [-1-t(3)  0    t(1); 0  -1-t(3) t(2); 0  0  1] * R'; 
                
-               %%
-  figure;
-  imshow(pic);
+%%
+ figure;
+ imshow(pic);
              
  [ep(1,1) ep(2,1)]= ginput(1)
  [em(1,1) em(2,1)]= ginput(1)
@@ -251,14 +239,17 @@ cprimeplus = R*[(1-t(3))  0  0;
  ep = K^-1 * ep;
  em = K^-1 * em;
  
-%%
-intermediaire1plus= ep' * cprimeplus * ep;
-intermediaire1moins= em' * cprimemoins * em;
-intermediaire2plus= ep' * csecondeplus * ep;
-intermediaire2moins= em' * csecondemoins * em;
+%% Solution du syst?me d'equations
+X0 = sym('X0');
+eq1= ep' * cpPlus * ep + X0*ep' * cppPlus * ep;
+eq2= em' * cpMoins * em + X0*em' * cppMoins * em;
 
-X0plus= - intermediaire1plus / intermediaire2plus
-X0moins= - intermediaire1moins / intermediaire2moins
+X0m=[fliplr(sym2poly(eq1));fliplr(sym2poly(eq2))];
+X0=-X0m(1,1)/X0m(1,2);
+
+r=sqrt((X0)^2+m^2); % Verify!!!!
+
+t(1)=t(1)-X0; % Change of coordenates
 
 %% on remplace Xo dans c  afin de verifier la valeur trouvee pour X0
 
@@ -282,5 +273,22 @@ cplus = R*[(1-t(3))  0  0;
         0  -1-t(3) t(2);
         0      0       1] * R'
     
- %% essayer de veriffier si Xo est bon 
- cplus * P 
+ %% Reprojection des points dans l'image synthetis?
+P=K*R*[eye(3) -t(1:3)];
+s=500;
+w=2*r*asin(m/r);
+imgrec=zeros(ceil(s*w/2),2*s);
+[X, Y]=find(imgrec==0);
+
+Z = Y/s - 1;
+Alpha = X/(s*r)-asin(m/r);
+Q=[r*cos(Alpha), r*sin(Alpha), Z, ones(length(Z),1)];
+Q=Q';
+
+for i=1:1:length(Q)
+    q=P*Q(:,i); q=q/q(3);
+    imgrec3(abs(Y(i)-(2*s))+1,X(i),:)=pic(round(q(2)),round(q(1)),:);
+end
+
+ 
+ 
