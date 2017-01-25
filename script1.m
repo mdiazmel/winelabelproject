@@ -136,11 +136,12 @@ close all   % Fermer toutes les fenetres ouvertes
    % On garde R2, R3, R5 et R8
 %% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
 
-x = calculPose(a, b, c, d, R8)
+R = R8;
+
+x = calculPose(a, b, c, d, R)
 t = x(1:3);
 m = x(4);
 
-R = R3;
 P=K*R*[eye(3) -t];
 
 an=P*[0; -m; 1; 1]; 
@@ -166,7 +167,7 @@ X(5,:)=X(1,:);
 Y(5,:)= Y(1,:);
 X1=q(:,1);
 Y1=q(:,2);
-plot(X,Y,'*','LineWidth',3,'MarkerSize',20);
+plot(X,Y,'*--','LineWidth',3,'MarkerSize',20);
 hold on;
 plot(an(1),an(2),'s','Linewidth',3,'MarkerSize',20);
 hold on
@@ -179,7 +180,7 @@ hold on
 plot (a,m,'s')
 
 
-%%  calcul de l'erreur de modédilsation
+%%  calcul de l'erreur de mod?dilsation
 
 Err_modA = sqrt(abs((xA-an(1))^2 - ((yA-an(2))^2)))
 Err_modB = sqrt(abs((xB-an(1))^2 - ((yB-an(2))^2)))
@@ -190,4 +191,4 @@ Err_moyenne = (Err_modA+Err_modB+Err_modC+Err_modD)/4
 %a = (x, y)
 %a_proj1 = (w, z)
 
-%la différence entre a et a_proj1 est : sqrt((x-w)^2 - (y-x)^2)
+%la diff?rence entre a et a_proj1 est : sqrt((x-w)^2 - (y-x)^2)
