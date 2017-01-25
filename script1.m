@@ -225,7 +225,7 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
              0  0  0;
             -1  0  0] * ...
             [-1-t(3)  0    t(1); 0  -1-t(3) t(2); 0  0  1] * R'; 
-               
+                       
 %%
  figure;
  imshow(pic);
@@ -240,6 +240,7 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
  em = K^-1 * em;
  
 %% Solution du syst?me d'equations
+
 X0 = sym('X0');
 eq1= ep' * cpPlus * ep + X0*ep' * cppPlus * ep;
 eq2= em' * cpMoins * em + X0*em' * cppMoins * em;
@@ -249,7 +250,21 @@ X0=-X0m(1,1)/X0m(1,2);
 
 r=sqrt((X0)^2+m^2); % Verify!!!!
 
-t(1)=t(1)-X0; % Change of coordenates
+%t(1)=t(1)-X0; % Change of coordenates
+
+
+%% Verification
+CPlus= R* [1-t(3)     0       0  ;   0     1-t(3)    0  ;   t(1)    t(2)      1   ]*...
+          [1          0      -X0 ;   0       1       0  ;   -X0      0       -m^2]*...
+          [1-t(3)     0      t(1);   0     1-t(3)   t(2);    0        0       1   ]*R';
+
+CMinus= R* [-1-t(3)     0       0  ;   0    -1-t(3)    0  ;   t(1)    t(2)      1   ]*...
+           [ 1          0      -X0 ;   0       1       0  ;   -X0      0       -m^2]*...
+           [-1-t(3)     0      t(1);   0    -1-t(3)   t(2);    0        0       1   ]*R';     
+
+        
+plot_elipse(CPlus, [positions2(1,1:2);positions2(4,1:2)], K, 100);
+
 
 %% on remplace Xo dans c  afin de verifier la valeur trouvee pour X0
 
@@ -273,15 +288,31 @@ cplus = R*[(1-t(3))  0  0;
         0  -1-t(3) t(2);
         0      0       1] * R'
     
- %% Reprojection des points dans l'image synthetis?
-P=K*R*[eye(3) -t(1:3)];
+ %% Reprojection des points dans l'image synthetis? methode simple
+P=K*R*[eye(3) -t];
 s=500;
 w=2*r*asin(m/r);
-imgrec=zeros(ceil(s*w/2),2*s);
+imgrec=zeros(ceil(s*w),2*s);
 [X, Y]=find(imgrec==0);
 
+
+
+for l=1:size(imgrec,2)
+    for c=1:size(imgrec,1)
+        Z = l/s - 1;
+        Alpha = 2*c/(s*r) - asin(m/r);
+        Q = [r*cos(Alpha); r*sin(Alpha); Z; ones(length(Z),1)];
+        q = P * Q;
+        q = q/q(3);
+        imgrec(c,l) = pic(round(q(1)), round(q(2)));
+    end
+end
+
+
+
+%% Methode optimis? de reprojection
 Z = Y/s - 1;
-Alpha = X/(s*r)-asin(m/r);
+Alpha = 2*X/(s*r)-asin(m/r);
 Q=[r*cos(Alpha), r*sin(Alpha), Z, ones(length(Z),1)];
 Q=Q';
 
@@ -289,6 +320,6 @@ for i=1:1:length(Q)
     q=P*Q(:,i); q=q/q(3);
     imgrec3(abs(Y(i)-(2*s))+1,X(i),:)=pic(round(q(2)),round(q(1)),:);
 end
-
+figure, image(imgrec3);
  
  
