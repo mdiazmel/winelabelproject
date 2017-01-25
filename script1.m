@@ -225,7 +225,6 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
              0  0  0;
             -1  0  0] * ...
             [-1-t(3)  0    t(1); 0  -1-t(3) t(2); 0  0  1] * R'; 
-                       
 %%
  figure;
  imshow(pic);
@@ -240,7 +239,6 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
  em = K^-1 * em;
  
 %% Solution du syst?me d'equations
-
 X0 = sym('X0');
 eq1= ep' * cpPlus * ep + X0*ep' * cppPlus * ep;
 eq2= em' * cpMoins * em + X0*em' * cppMoins * em;
@@ -309,17 +307,7 @@ for l=1:size(imgrec,2)
 end
 
 
+figure, image(imgrec);
 
-%% Methode optimis? de reprojection
-Z = Y/s - 1;
-Alpha = 2*X/(s*r)-asin(m/r);
-Q=[r*cos(Alpha), r*sin(Alpha), Z, ones(length(Z),1)];
-Q=Q';
-
-for i=1:1:length(Q)
-    q=P*Q(:,i); q=q/q(3);
-    imgrec3(abs(Y(i)-(2*s))+1,X(i),:)=pic(round(q(2)),round(q(1)),:);
-end
-figure, image(imgrec3);
  
  
