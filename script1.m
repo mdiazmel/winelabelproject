@@ -2,14 +2,15 @@
 clear all   % Nettoyer les variables du workspace (memoire)
 close all   % Fermer toutes les fenetres ouvertes
 
-
+%filename = 'images/fleurHaut.jpg'
+filename = 'westerncelars.JPG'
 %% Charger l'image en Matlab. Charger aussi information des metadonn?es.
-      clear all;
-      pic = imread('westerncelars.JPG');
+     
+      pic = imread(filename);
       imshow(pic);
       
       % Metadonn?es
-      info = imfinfo('westerncelars.JPG')
+      info = imfinfo(filename);
       info.DigitalCamera;
       f_in_mm =info.DigitalCamera.FocalLength;
       
@@ -43,7 +44,7 @@ close all   % Fermer toutes les fenetres ouvertes
               c_info{i,j} = getCursorInfo(dcm_obj);
           end
       end
- %%     
+    
     % Export the positions obtained by the data cursor to the workspace
       for j = 1:num_input
           for i = 1:size(c_info,1)
@@ -53,12 +54,7 @@ close all   % Fermer toutes les fenetres ouvertes
       for jj =1:4
           positions2(jj,:) = c_info{jj}.Position;
       end
-      %%
-      for i = 1:num_input
-          % some code that fits your spline function to the data 
-      end
-      close all
-      
+   
 %%
 
     
@@ -82,10 +78,10 @@ close all   % Fermer toutes les fenetres ouvertes
    
    
    %% Pas 1. Calcul des points de l'image callibres selon la matrice K
-   s=1;     % car les ( skew ) pixels sont carres
+   s=0;     % car les ( skew ) pixels sont carres
     
-   K= [f,s,u0;
-       0,f,v0;
+   K= [f,s,v0/2;
+       0,f,u0/2;
        0,0,1]
    
    positions2(:,3)=1;     % Ajout d'un 1 pour creer de coordonees homogenes
@@ -101,7 +97,7 @@ close all   % Fermer toutes les fenetres ouvertes
    v2 = cross(cross(a,d),cross(b,c));
   
    
-   %% Clacul de points de fuite 
+   %% Calcul de points de fuite 
    % Methode 2
    intersection_1 = lineIntersection(a(1:2),b(1:2),c(1:2),d(1:2));  %E
    intersection_2 = lineIntersection2(a(1:2),b(1:2),c(1:2),d(1:2));  %E2
@@ -159,8 +155,8 @@ dn=P*[0; m; 1; 1];
 dn=dn/dn(3,1)
 
 %%
-
-imshow(pic);
+figure, 
+image(pic);
 hold on;
    
 X=positions2(:,1);
@@ -231,12 +227,16 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
              
  [ep(1,1) ep(2,1)]= ginput(1)
  [em(1,1) em(2,1)]= ginput(1)
+ ep = round(ep);
+ em = round(em);
  
  ep(3,1)=1;
  em(3,1)=1;
  
  ep = K^-1 * ep;
  em = K^-1 * em;
+ 
+ hold on,
  
 %% Solution du syst?me d'equations
 X0 = sym('X0');
@@ -262,6 +262,7 @@ CMinus= R* [-1-t(3)     0       0  ;   0    -1-t(3)    0  ;   t(1)    t(2)      
 
         
 plot_elipse(CPlus, [positions2(1,1:2);positions2(4,1:2)], K, 100);
+plot_elipse(CMinus, [positions2(2,1:2);positions2(3,1:2)], K, 100);
 
 
 %% on remplace Xo dans c  afin de verifier la valeur trouvee pour X0
@@ -290,24 +291,32 @@ cplus = R*[(1-t(3))  0  0;
 P=K*R*[eye(3) -t];
 s=500;
 w=2*r*asin(m/r);
-imgrec=zeros(ceil(s*w),2*s);
+imgrec=zeros(2*s,round(s*w/2));
 [X, Y]=find(imgrec==0);
 
 
 
-for l=1:size(imgrec,2)
-    for c=1:size(imgrec,1)
+for l=1:size(imgrec,1)
+    for c=1:size(imgrec,2)
         Z = l/s - 1;
         Alpha = 2*c/(s*r) - asin(m/r);
         Q = [r*cos(Alpha); r*sin(Alpha); Z; ones(length(Z),1)];
         q = P * Q;
         q = q/q(3);
-        imgrec(c,l) = pic(round(q(1)), round(q(2)));
+        imgrec(abs(l-2*s+1),c) = pic(round(q(2)),round(q(1)));
     end
 end
 
 
-figure, image(imgrec);
+figure, imshow(imgrec, []);
+%%
+ 
+Z = Y/s - 1;
+Alpha = 2*X/(s*r)-asin(x(4)/r);
+Q=[r*cos(Alpha), r*sin(Alpha), Z, ones(length(Z),1)];
+Q=Q';
 
- 
- 
+for i=1:1:length(Q)
+    q=P*Q(:,i); q=q/q(3);
+    imgrec3(X(i),abs(Y(i)-(2*s))+1,:)=img(round(q(2)),round(q(1)),:);
+end 
