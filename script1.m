@@ -55,27 +55,6 @@ filename = 'westerncelars.JPG'
           positions2(jj,:) = c_info{jj}.Position;
       end
    
-%%
-
-    
-     
-% Get the equation of the line
-   xA = c_info{1, 1}.Position(1,1);
-   yA = c_info{1, 1}.Position(1,2);
-   xB = c_info{2, 1}.Position(1,1);
-   yB = c_info{2, 1}.Position(1,2);
-   xC = c_info{3, 1}.Position(1,1);
-   yC = c_info{3, 1}.Position(1,2);
-   xD = c_info{4, 1}.Position(1,1);
-   yD = c_info{4, 1}.Position(1,2);
-
-  
-   aP=positions2(1,:);
-   bP=positions2(2,:);
-   cP=positions2(3,:);
-   dP=positions2(4,:);
-   
-   
    
    %% Pas 1. Calcul des points de l'image callibres selon la matrice K
    s=0;     % car les ( skew ) pixels sont carres
@@ -95,13 +74,7 @@ filename = 'westerncelars.JPG'
    % Methode 1
    v1 = cross(cross(a,b),cross(c,d));
    v2 = cross(cross(a,d),cross(b,c));
-  
-   
-   %% Calcul de points de fuite 
-   % Methode 2
-   intersection_1 = lineIntersection(a(1:2),b(1:2),c(1:2),d(1:2));  %E
-   intersection_2 = lineIntersection2(a(1:2),b(1:2),c(1:2),d(1:2));  %E2
-   
+     
    %% Pas 3. Normalize au vector unit? les vectors v1 et v2
    v1 = v1/norm(v1)
    v2 = v2/norm(v2)
@@ -178,12 +151,16 @@ hold on
 plot (a,m,'s')
 
 
-%%  calcul de l'erreur de mod?dilsation
+%%  calcul de l'erreur de mod?lisation
+A = positions2(1,:);
+B = positions2(2,:);
+C = positions2(3,:);
+D = positions2(4,:);
 
-Err_modA = sqrt(abs((xA-an(1))^2 - ((yA-an(2))^2)))
-Err_modB = sqrt(abs((xB-an(1))^2 - ((yB-an(2))^2)))
-Err_modC = sqrt(abs((xC-an(1))^2 - ((yC-an(2))^2)))
-Err_modD = sqrt(abs((xD-an(1))^2 - ((yD-an(2))^2)))
+Err_modA = sqrt(abs((A(1)-an(1))^2 - ((A(2)-an(2))^2)))
+Err_modB = sqrt(abs((B(1)-an(1))^2 - ((B(2)-an(2))^2)))
+Err_modC = sqrt(abs((C(1)-an(1))^2 - ((C(2)-an(2))^2)))
+Err_modD = sqrt(abs((D(1)-an(1))^2 - ((D(2)-an(2))^2)))
 
 Err_moyenne = (Err_modA+Err_modB+Err_modC+Err_modD)/4
 % nous obtenons l'erreur moyenne la plus faible avec R3
@@ -263,60 +240,44 @@ CMinus= R* [-1-t(3)     0       0  ;   0    -1-t(3)    0  ;   t(1)    t(2)      
         
 plot_elipse(CPlus, [positions2(1,1:2);positions2(4,1:2)], K, 100);
 plot_elipse(CMinus, [positions2(2,1:2);positions2(3,1:2)], K, 100);
-
-
-%% on remplace Xo dans c  afin de verifier la valeur trouvee pour X0
-
-cplus = R*[(1-t(3))  0  0;
-            0  (1-t(3)) 0;
-             t(1) t(2)   1] * ...
-            [1  0  -X0plus;
-              0  1  0;
-             -X0plus  0  -m*m] * ...
-             [(1-t(3))  0    t(1);
-                  0  (1-t(3)) t(2);
-                  0      0       1] * R'
-     
- cmoins = R*[-1-t(3)  0  0;
-            0  -1-t(3) 0;
-             t(1) t(2)   1] * ...
-      [1  0  -X0plus;
-       0  1  0;
-       -X0plus  0  -m*m] * ...
-      [-1-t(3)  0    t(1);
-        0  -1-t(3) t(2);
-        0      0       1] * R'
-    
+ 
  %% Reprojection des points dans l'image synthetis? methode simple
-P=K*R*[eye(3) -t];
+clear imgrec imgrec2
 s=500;
 w=2*r*asin(m/r);
-imgrec=zeros(2*s,round(s*w/2));
-[X, Y]=find(imgrec==0);
+imgrec=zeros(2*s,round(2*s*w));
 
+t = x(1:3);
+t(1)=t(1)-X0; % Change of coordenates
+P=K*R*[eye(3) -t]; % New Projection matrix with translation os X0
 
-
-for l=1:size(imgrec,1)
-    for c=1:size(imgrec,2)
-        Z = l/s - 1;
-        Alpha = 2*c/(s*r) - asin(m/r);
+for y_img=1:size(imgrec,1)
+    for x_img=1:size(imgrec,2)
+        Z = y_img/s - 1;
+        Alpha = 2*x_img/(s*r) - asin(m/r);
         Q = [r*cos(Alpha); r*sin(Alpha); Z; ones(length(Z),1)];
         q = P * Q;
         q = q/q(3);
-        imgrec(abs(l-2*s+1),c) = pic(round(q(2)),round(q(1)));
+        %imgrec(abs(l-2*s+1),x_img) = pic(round(q(2)),round(q(1)));
+        imgrec(2*s-(y_img-1),round(2*s*w)-(x_img-1)) = pic(round(q(2)),round(q(1)));
     end
 end
+imgrec2 = imcrop(imgrec, [size(imgrec,2)/2-round(s*w/2) 0 round(s*w) size(imgrec,1)]);
 
+figure, imshow(imgrec,[])
+figure, imshow(imgrec2,[])
 
-figure, imshow(imgrec, []);
+%figure, image(double(imgrec/255))
 %%
- 
+
+[X, Y]=find(imgrec==0);
 Z = Y/s - 1;
 Alpha = 2*X/(s*r)-asin(x(4)/r);
 Q=[r*cos(Alpha), r*sin(Alpha), Z, ones(length(Z),1)];
 Q=Q';
 
+
 for i=1:1:length(Q)
     q=P*Q(:,i); q=q/q(3);
-    imgrec3(X(i),abs(Y(i)-(2*s))+1,:)=img(round(q(2)),round(q(1)),:);
+    imgrec3(X(i),abs(Y(i)-(2*s))+1,:)=pic(round(q(2)),round(q(1)),:);
 end 
