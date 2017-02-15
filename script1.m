@@ -149,6 +149,7 @@ dn=dn/dn(3,1)
 %%%%%%%%%%%%%%%%%%%%%%%%%
 figure, 
 image(pic);
+axis equal tight
 hold on;
    
 X=positions2(:,1);
