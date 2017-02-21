@@ -1,11 +1,16 @@
-%% R?cuperation d'etiquettes de bouteilles de vin
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% R?cuperation d'etiquettes de bouteilles de vin
+%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all   % Nettoyer les variables du workspace (memoire)
 close all   % Fermer toutes les fenetres ouvertes
 
 %filename = 'images/fleurHaut.jpg'
-filename = 'vin.jpg'
-%% Charger l'image en Matlab. Charger aussi information des metadonn?es.
-     
+filename = 'westerncelars.JPG'
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Charger l'image en Matlab. Charger aussi information des metadonn?es.
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
       pic = imread(filename);
       imshow(pic);
       
@@ -21,13 +26,12 @@ filename = 'vin.jpg'
       % transformer pour une distance focal express?e en pixels :
       
       % Extraction de la taille du capteur en mm
-      %taille_en_mm = info.DigitalCamera.FocalLength * 35 / info.DigitalCamera.FocalLengthIn35mmFilm;
+      taille_en_mm = info.DigitalCamera.FocalLength * 35 / info.DigitalCamera.FocalLengthIn35mmFilm;
       
       % focal length in pixels = (image width in pixels) * (focal length in mm) / (CCD width in mm)
-      %f = u0 * f_in_mm / taille_en_mm;  % Size of the CCD d'un iphone 6, 4.80 x 3.60 mm (d'apr?s Internet...)
-        f=u0*f_in_mm/4.8;
+      f = u0 * f_in_mm / taille_en_mm;  % Size of the CCD d'un iphone 6, 4.80 x 3.60 mm (d'apr?s Internet...)
         
- %%   user input points  
+ %   user input points  
       
     % Define the number of times you want to repeat the process
     % e.g. if there are multiple lines / shapes that you need to fit to
@@ -57,7 +61,11 @@ filename = 'vin.jpg'
       end
    
    
-   %% Pas 1. Calcul des points de l'image callibres selon la matrice K
+   %% 
+   %%%%%%%%%%%%%%%%%%%%%%%%%
+   % Pas 1. Calcul des points de l'image callibres selon la matrice K
+   %%%%%%%%%%%%%%%%%%%%%%%%%
+   
    s=0;     % car les ( skew ) pixels sont carres
     
    K= [f,s,v0/2;
@@ -71,17 +79,23 @@ filename = 'vin.jpg'
    c = q(:,3);
    d = q(:,4);
    
-   %%  Pas 2. Calcule des points de fuite
+   %%%%%%%%%%%%%%%%%%%%%%%%%
+   %  Pas 2. Calcule des points de fuite
    % Methode 1
+   %%%%%%%%%%%%%%%%%%%%%%%%%
    v1 = cross(cross(a,b),cross(c,d));
    v2 = cross(cross(a,d),cross(b,c));
      
-   %% Pas 3. Normalize au vector unit? les vectors v1 et v2
+   %%%%%%%%%%%%%%%%%%%%%%%%%
+   % Pas 3. Normalize au vector unit? les vectors v1 et v2
+   %%%%%%%%%%%%%%%%%%%%%%%%%
    v1 = v1/norm(v1)
    v2 = v2/norm(v2)
    
-   %% Pas 4. Calcule des solutions possibles pour R.
+   %%%%%%%%%%%%%%%%%%%%%%%%%
+   % Pas 4. Calcule des solutions possibles pour R.
    % Toutes les possibilit?s sont test?s
+   %%%%%%%%%%%%%%%%%%%%%%%%%
    
    R1 = [cross(v1,v2) v2 v1]   
    R2 = [cross(v1,v2) -v2 v1];  %%
@@ -104,10 +118,12 @@ filename = 'vin.jpg'
     det(R8)
     
    % On garde R2, R3, R5 et R8
-%% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
-%R8 et R5 2cart? car m n?gatif 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Pas 5. Calcul de la pose (t) et de la largeur de l'ettiquette (m)
+%R8 et R5 2cart? car m n?gatif
+%%%%%%%%%%%%%%%%%%%%%%%%% 
 
-R = R3;
+R = R2;
 
 x = calculPose(a, b, c, d, R)
 
@@ -128,9 +144,12 @@ cn=cn/cn(3,1)
 dn=P*[0; m; 1; 1]; 
 dn=dn/dn(3,1)
 
-%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Visualization
+%%%%%%%%%%%%%%%%%%%%%%%%%
 figure, 
 image(pic);
+axis equal tight
 hold on;
    
 X=positions2(:,1);
@@ -151,8 +170,10 @@ plot(dn(1),dn(2),'s','Linewidth',3,'MarkerSize',20);
 hold on
 plot (a,m,'s')
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%  calcul de l'erreur de mod?lisation
+%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%  calcul de l'erreur de mod?lisation
 A = positions2(1,:);
 B = positions2(2,:);
 C = positions2(3,:);
@@ -169,7 +190,9 @@ Err_moyenne = (Err_modA+Err_modB+Err_modC+Err_modD)/4
 
 %la diff?rence entre a et a_proj1 est : sqrt((x-w)^2 - (y-x)^2)
 
-%% Definition des matrices c c' et c''
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition des matrices c c' et c''
+%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % C prime plus 
 cpPlus =    R*[(1-t(3))  0  0; 0  (1-t(3)) 0; t(1) t(2) 1] * ...
@@ -199,7 +222,10 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
              0  0  0;
             -1  0  0] * ...
             [-1-t(3)  0    t(1); 0  -1-t(3) t(2); 0  0  1] * R'; 
-%%
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% Visualusation
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
  figure;
  imshow(pic);
              
@@ -216,7 +242,7 @@ cppMoins =  R*[-1-t(3)  0  0; 0  -1-t(3) 0; t(1) t(2)   1] * ...
  
  hold on,
  
-%% Solution du syst?me d'equations
+% Solution du syst?me d'equations
 X0 = sym('X0');
 eq1= ep' * cpPlus * ep + X0*ep' * cppPlus * ep;
 eq2= em' * cpMoins * em + X0*em' * cppMoins * em;
@@ -229,7 +255,7 @@ r=sqrt((X0)^2+m^2); % Verify!!!!
 %t(1)=t(1)-X0; % Change of coordenates
 
 
-%% Verification
+% Verification
 CPlus= R* [1-t(3)     0       0  ;   0     1-t(3)    0  ;   t(1)    t(2)      1   ]*...
           [1          0      -X0 ;   0       1       0  ;   -X0      0       -m^2]*...
           [1-t(3)     0      t(1);   0     1-t(3)   t(2);    0        0       1   ]*R';
@@ -239,15 +265,15 @@ CMinus= R* [-1-t(3)     0       0  ;   0    -1-t(3)    0  ;   t(1)    t(2)      
            [-1-t(3)     0      t(1);   0    -1-t(3)   t(2);    0        0       1   ]*R';     
 
         
-plot_elipse_concave(CPlus, [positions2(1,1:2);positions2(4,1:2)], K, 100);
-plot_elipse_convexe(CMinus, [positions2(2,1:2);positions2(3,1:2)], K, 100);
+plot_elipse(CPlus, [positions2(1,1:2);positions2(4,1:2)], K, 100, 'major');
+plot_elipse(CMinus, [positions2(2,1:2);positions2(3,1:2)], K, 100, 'minor');
  
  %% Reprojection des points dans l'image synthetis? methode simple
-clear imgrec imgrec2 imrecColor
+clear imgrec imgrecColor
 s=500;
 w=2*r*asin(m/r);
 imgrec=zeros(2*s,round(s*w/2));
-imrecColor=zeros(2*s,round(s*w/2),3); %matrice en trois dimensions
+imgrecColor = zeros(2*s,round(s*w/2),3);
 
 t = x(1:3);
 t(1)=t(1)-X0; % Change of coordenates
@@ -257,33 +283,38 @@ for y_img=1:size(imgrec,1)
     for x_img=1:size(imgrec,2)
         Z = y_img/s - 1;
         Alpha = 2*x_img/(s*r) - asin(m/r);
-        Q = [r*cos(Alpha); r*sin(Alpha); Z; ones(length(Z),1)];
+        Q = [r*cos(Alpha); r*sin(Alpha); Z; 1];
         q = P * Q;
         q = q/q(3);
-        
-        imgrec(2*s-(y_img-1),round(s*w/2)-(x_img-1)) = pic(round(q(2)),round(q(1)));
-   
-        imrecColor(2*s-(y_img-1),round(2*s*w)-(x_img-1),1) = pic(round(q(2)),round(q(1)),1);%a creuser
-        imrecColor(2*s-(y_img-1),round(2*s*w)-(x_img-1),2) = pic(round(q(2)),round(q(1)),2);
-        imrecColor(2*s-(y_img-1),round(2*s*w)-(x_img-1),3) = pic(round(q(2)),round(q(1)),3);
+        %imgrec(2*s-(y_img-1),x_img) = pic(round(q(2)),round(q(1)));
+        imgrecColor(2*s-(y_img-1),x_img,:) = pic(round(q(2)),round(q(1)),:);
     end
 end
-imgrec2 = imcrop(imgrec, [size(imgrec,2)/2-round(s*w/2) 0 round(s*w) size(imgrec,1)]);
 
-%figure, imshow(imgrec,[])
-%figure, imshow(imgrec2,[])
-figure, imshow(imrecColor/255)
-%figure, image(double(imgrec/255))
+
+figure, imshow(imgrecColor/255)
+
+
 %%
+% % Reconstruction de l'image plus performante
+clear imgrec imgrec3
+t = x(1:3);
+t(1)=t(1)-X0; % Change of coordenates
 
-[X, Y]=find(imgrec==0);
+P=K*R*[eye(3) -t];
+s=500;
+w=2*r*asin(m/r);
+imgrec=zeros(round(s*w/2), 2*s);
+[X, Y]=find(imgrec==0);                                                                                                                                                                                         
+
 Z = Y/s - 1;
-Alpha = 2*X/(s*r)-asin(x(4)/r);
+Alpha = 2*X/(s*r)-asin(m/r);
 Q=[r*cos(Alpha), r*sin(Alpha), Z, ones(length(Z),1)];
 Q=Q';
 
-
 for i=1:1:length(Q)
     q=P*Q(:,i); q=q/q(3);
-    imgrec3(X(i),abs(Y(i)-(2*s))+1,:)=pic(round(q(2)),round(q(1)),:);
-end 
+    imgrec3(2*s-(Y(i)-1),X(i),:)=pic(round(q(2)),round(q(1)),:);
+    %imgrec3(abs(Y(i)-(2*s))+1,X(i),:)=pic(round(q(2)),round(q(1)),:);
+end
+figure, imshow(imgrec3,[])
